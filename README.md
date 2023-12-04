@@ -7,7 +7,7 @@
    ```
 3. Navigate to the project directory:
     ``` java
-   cd in-memory-database
+   cd Data-Processing-and-Storage
     ```
 5. Compile and run the java program
     ```java
