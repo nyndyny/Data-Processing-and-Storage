@@ -18,6 +18,7 @@ public class InMemoryDBImpl implements InMemoryDB {
     private Map<String, Integer> data;
     private Map<String, Integer> transactionData;
     private boolean inTransaction;
+    private boolean isCommit = false;
 
     public InMemoryDBImpl() {
         this.data = new HashMap<>();
@@ -27,7 +28,8 @@ public class InMemoryDBImpl implements InMemoryDB {
 
     @Override
     public int get(String key) {
-        if (inTransaction && transactionData.containsKey(key)) {
+        if (inTransaction && transactionData.containsKey(key) && isCommit) {
+            isCommit = false;
             return transactionData.get(key);
         }
         return data.getOrDefault(key, 0);
@@ -55,6 +57,7 @@ public class InMemoryDBImpl implements InMemoryDB {
         if (!inTransaction) {
             throw new IllegalStateException("Error: No open transaction to commit");
         }
+        isCommit = true;
         data.putAll(transactionData);
         clearTransaction();
     }
@@ -109,7 +112,7 @@ public class InMemoryDBImpl implements InMemoryDB {
         System.out.println(inmemoryDB.get("B")); // should return null because B does not exist in the database
 
         inmemoryDB.begin_transaction(); // starts a new transaction
-        inmemoryDB.put("B", 10); // set key B’s value to 10 within the transaction
+        inmemoryDB.put("B", 10); // set key B's value to 10 within the transaction
         inmemoryDB.rollback(); // rollback the transaction - revert any changes made to B
 
         System.out.println(inmemoryDB.get("B")); // should return null because changes to B were rolled back
