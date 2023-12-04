@@ -75,10 +75,10 @@ public class InMemoryDBImpl implements InMemoryDB {
     public static void main(String[] args) {
         InMemoryDB inmemoryDB = new InMemoryDBImpl();
 
-        System.out.println(inmemoryDB.get("A")); // should return null
+        System.out.println(inmemoryDB.get("A")); // should return null, because A doesn’t exist in the DB yet
 
         try {
-            inmemoryDB.put("A", 5); // should throw an error
+            inmemoryDB.put("A", 5); // should throw an error because a transaction is not in progress
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -86,32 +86,32 @@ public class InMemoryDBImpl implements InMemoryDB {
         inmemoryDB.begin_transaction();
 
         inmemoryDB.put("A", 5);
-        System.out.println(inmemoryDB.get("A")); // should return null
+        System.out.println(inmemoryDB.get("A")); // should return null, because updates to A are not committed yet
 
         inmemoryDB.put("A", 6);
 
         inmemoryDB.commit();
 
-        System.out.println(inmemoryDB.get("A")); // should return 6
+        System.out.println(inmemoryDB.get("A")); // should return 6, that was the last value of A to be committed
 
         try {
-            inmemoryDB.commit(); // throws an error
+            inmemoryDB.commit(); // throws an error, because there is no open transaction
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
         try {
-            inmemoryDB.rollback(); // throws an error
+            inmemoryDB.rollback(); // throws an error because there is no ongoing transaction
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        System.out.println(inmemoryDB.get("B")); // should return null
+        System.out.println(inmemoryDB.get("B")); // should return null because B does not exist in the database
 
         inmemoryDB.begin_transaction();
         inmemoryDB.put("B", 10);
         inmemoryDB.rollback();
 
-        System.out.println(inmemoryDB.get("B")); // should return null
+        System.out.println(inmemoryDB.get("B")); // should return null because changes to B were rolled back
     }
 }
