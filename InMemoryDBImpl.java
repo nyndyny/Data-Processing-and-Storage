@@ -36,7 +36,7 @@ public class InMemoryDBImpl implements InMemoryDB {
     @Override
     public void put(String key, int val) {
         if (!inTransaction) {
-            throw new IllegalStateException("Transaction not in progress");
+            throw new IllegalStateException("Error: Transaction not in progress");
         }
         transactionData.put(key, val);
     }
@@ -44,7 +44,7 @@ public class InMemoryDBImpl implements InMemoryDB {
     @Override
     public void begin_transaction() {
         if (inTransaction) {
-            throw new IllegalStateException("Another transaction is already in progress");
+            throw new IllegalStateException("Error: Another transaction is already in progress");
         }
         inTransaction = true;
         transactionData.clear();
@@ -53,7 +53,7 @@ public class InMemoryDBImpl implements InMemoryDB {
     @Override
     public void commit() {
         if (!inTransaction) {
-            throw new IllegalStateException("No open transaction to commit");
+            throw new IllegalStateException("Error: No open transaction to commit");
         }
         data.putAll(transactionData);
         clearTransaction();
@@ -62,7 +62,7 @@ public class InMemoryDBImpl implements InMemoryDB {
     @Override
     public void rollback() {
         if (!inTransaction) {
-            throw new IllegalStateException("No ongoing transaction to rollback");
+            throw new IllegalStateException("Error: No ongoing transaction to rollback");
         }
         clearTransaction();
     }
@@ -83,14 +83,14 @@ public class InMemoryDBImpl implements InMemoryDB {
             System.out.println(e.getMessage());
         }
 
-        inmemoryDB.begin_transaction();
+        inmemoryDB.begin_transaction(); //starts a new transaction
 
-        inmemoryDB.put("A", 5);
+        inmemoryDB.put("A", 5); // value not committed yet
         System.out.println(inmemoryDB.get("A")); // should return null, because updates to A are not committed yet
 
-        inmemoryDB.put("A", 6);
+        inmemoryDB.put("A", 6); // updating value to 6
 
-        inmemoryDB.commit();
+        inmemoryDB.commit(); // commits the open transaction
 
         System.out.println(inmemoryDB.get("A")); // should return 6, that was the last value of A to be committed
 
@@ -108,9 +108,9 @@ public class InMemoryDBImpl implements InMemoryDB {
 
         System.out.println(inmemoryDB.get("B")); // should return null because B does not exist in the database
 
-        inmemoryDB.begin_transaction();
-        inmemoryDB.put("B", 10);
-        inmemoryDB.rollback();
+        inmemoryDB.begin_transaction(); // starts a new transaction
+        inmemoryDB.put("B", 10); // set key B’s value to 10 within the transaction
+        inmemoryDB.rollback(); // rollback the transaction - revert any changes made to B
 
         System.out.println(inmemoryDB.get("B")); // should return null because changes to B were rolled back
     }
