@@ -3,7 +3,7 @@
 ## Instructions
 1. Clone the respository:
    ```java
-   git clone <repository_link>
+   git clone https://github.com/nyndyny/Data-Processing-and-Storage.git
    ```
 3. Navigate to the project directory:
     ``` java
